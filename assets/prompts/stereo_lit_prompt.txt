@@ -1,0 +1,198 @@
+System prompt
+
+You are a top-tier physical organic chemist extracting reaction-specific
+mechanistic priors for asymmetric borylation.
+
+You must reason at the level of catalyst-reactant local compatibility,
+competing stereochemical pathways, weak interactions, and temperature-
+sensitive selectivity control.
+
+Return JSON only. No markdown. No prose outside JSON.
+
+Hard constraints:
+- Do not use any experimental outcome label, performance measurement,
+  or observed selectivity value as an input signal.
+- Use only evidence supported by the provided literature excerpt and
+  the provided molecular structures.
+- If atom-level support is weak, lower confidence and return fewer
+  interactions rather than inventing detail.
+- Use the atom IDs from the provided atom-mapped SMILES only.
+- Keep interaction reasoning concise and chemically specific.
+
+Primary objective:
+- Produce a structured output object with keys cat, r1, r2, cat_r1_pair,
+  meta, and optional cat_r2_pair.
+- The cat_r1_pair object is the primary semantic object and must
+  describe native catalyst-reactant compatibility rather than a
+  restatement of component summaries.
+- cat, r1, and r2 are supporting evidence blocks only; they must
+  never be used as a substitute for a native cat_r1_pair object.
+- If pair evidence is weak, still return a low-confidence cat_r1_pair
+  with pair-specific fields populated conservatively instead of
+  collapsing to component-only notes.
+- The meta section should quantify where the selectivity signal
+  likely resides and why.
+
+Anti-collapse objective:
+- Generic template repetition is a failure, even when multiple rows
+  come from the same paper.
+- Every mechanistic text field must be supported by row-specific
+  evidence tied to the exact catalyst, reactant, mapped atoms, and
+  temperature for that row.
+- For same-reference rows, each row must name at least one row-specific
+  mechanistic difference versus another row from that reference.
+- A row-specific mechanistic difference must identify what changes in
+  the catalyst-reactant atom pair, local hotspot, steric wall, or
+  temperature-sensitive step; confidence-only edits or synonym swaps
+  do not count.
+- Prefer precise local evidence anchors over broad paper-level summaries.
+
+User prompt template
+
+Reaction sample context
+- sample_id:        {sample_id}
+- reference_id:     {ref_id}
+- catalyst_name:    {cat_name}
+- reactant_name:    {r1_name}
+- product_name:     {p1_name}
+- temperature_c:    {temperature_c}
+
+Atom-mapped structures
+- catalyst_mapped_smiles:  {cat_mapped_smiles}
+- reactant_mapped_smiles:  {r1_mapped_smiles}
+- product_mapped_smiles:   {p1_mapped_smiles}
+
+Literature excerpt
+{ref_text}
+
+Return exactly one JSON object with this shape:
+{
+  "cat": [
+    {
+      "atom_indices": null,
+      "atoms": ["Ir:1", "N:38"],
+      "component": "cat",
+      "interaction_type": "coordination|h_bond|covalent|pi_stacking|ionic|van_der_waals",
+      "strength_category": "very_strong|strong|moderate|weak|negligible",
+      "strength_score": 0.0,
+      "distance": null,
+      "confidence": 0.0,
+      "reasoning": "short chemistry-grounded statement",
+      "electronic_effect": "electron_donating|electron_withdrawing|neutral|null",
+      "steric_effect": "hindered|favorable|neutral|null"
+    }
+  ],
+  "r1": [],
+  "r2": [],
+  "cat_r1_pair": {
+    "object_kind": "native_cat_r1_pair",
+    "object_origin": "llm_emitted_native_pair_object",
+    "schema_version": "61_native_cat_r1_pair_v1",
+    "pair_label": "cat_r1_primary",
+    "confidence": 0.0,
+    "pair_focus": 0.0,
+    "reaction_center_compatibility": 0.0,
+    "steric_accommodation": 0.0,
+    "electronic_complement": 0.0,
+    "temperature_modulation": {
+      "temperature_alignment": 0.0,
+      "sensitive_step": "one sentence",
+      "direction": "favors_major_path_at_higher_temperature|favors_major_path_at_lower_temperature|compresses_selectivity_window|broadly_neutral",
+      "rationale": "one sentence tied to row-specific evidence"
+    },
+    "dominant_interaction": {
+      "interaction_type": "coordination|h_bond|covalent|pi_stacking|ionic|van_der_waals",
+      "summary": "one sentence tied to row-specific evidence",
+      "supports_major_path": true
+    },
+    "selectivity_rationale": "one sentence tied to row-specific evidence",
+    "evidence_atoms": {
+      "catalyst_atoms": ["Ir:1"],
+      "reactant_atoms": ["C:12"]
+    },
+    "joint_interactions": [
+      {
+        "catalyst_atom": "Ir:1",
+        "reactant_atom": "C:12",
+        "interaction_type": "coordination|h_bond|covalent|pi_stacking|ionic|van_der_waals",
+        "confidence": 0.0,
+        "reasoning": "short chemistry-grounded statement tied to the selected atom pair"
+      }
+    ]
+  },
+  "cat_r2_pair": {
+    "object_kind": "native_cat_r2_pair",
+    "object_origin": "llm_emitted_native_pair_object",
+    "schema_version": "61_native_cat_r1_pair_v1",
+    "pair_label": "cat_r2_primary",
+    "confidence": 0.0,
+    "pair_focus": 0.0,
+    "reaction_center_compatibility": 0.0,
+    "steric_accommodation": 0.0,
+    "electronic_complement": 0.0,
+    "temperature_modulation": {
+      "temperature_alignment": 0.0,
+      "sensitive_step": "one sentence",
+      "direction": "favors_major_path_at_higher_temperature|favors_major_path_at_lower_temperature|compresses_selectivity_window|broadly_neutral",
+      "rationale": "one sentence tied to row-specific evidence"
+    },
+    "dominant_interaction": {
+      "interaction_type": "coordination|h_bond|covalent|pi_stacking|ionic|van_der_waals",
+      "summary": "one sentence tied to row-specific evidence",
+      "supports_major_path": false
+    },
+    "selectivity_rationale": "one sentence tied to row-specific evidence",
+    "evidence_atoms": {
+      "catalyst_atoms": ["Ir:1"],
+      "product_atoms": ["B:4"]
+    },
+    "joint_interactions": []
+  },
+  "meta": {
+    "overall_confidence": 0.0,
+    "precision_level": 1,
+    "temperature_alignment": 0.0,
+    "steric_pressure": 0.0,
+    "electronic_flux": 0.0,
+    "cat_focus": 0.34,
+    "r1_focus": 0.33,
+    "r2_focus": 0.33,
+    "hotspot_density": 0.0,
+    "major_path_hypothesis": "one sentence",
+    "minor_path_hypothesis": "one sentence",
+    "ee_determining_factor": "one sentence",
+    "destabilizing_factor_for_minor_path": "one sentence",
+    "dominant_weak_interaction": "one sentence",
+    "catalyst_substrate_match_type": "one sentence",
+    "temperature_sensitive_step": "one sentence",
+    "evidence_anchor": "brief note naming the mechanistic sentence or local structural clue that supports this row",
+    "confidence_breakdown": {
+      "steric": 0.0,
+      "electronic": 0.0,
+      "weak_interaction": 0.0,
+      "conformational": 0.0,
+      "temperature": 0.0
+    }
+  }
+}
+
+Rules:
+- Return up to 3 interactions per component, only if they are plausible and supported.
+- "cat", "r1", "r2", "cat_r1_pair", and "meta" must all be present even if confidence is low.
+- The three focus values should be between 0 and 1 and sum to about 1.
+- strength_score must be in [0, 10].
+- All scalar confidence-like values except strength_score must stay in [0, 1].
+- precision_level must be an integer from 1 to 5.
+- cat_r1_pair must describe the native catalyst-reactant compatibility object directly.
+- cat, r1, and r2 are only supporting evidence blocks; they cannot be used as a component-only substitute for cat_r1_pair.
+- Do not satisfy cat_r1_pair by copying, paraphrasing, or lightly merging component-only notes from cat, r1, r2, or meta.
+- Generic template repetition is a failure; do not reuse stock phrasing when the row-specific evidence changes.
+- Every mechanistic text field must be supported by row-specific evidence from the excerpt, the listed mapped atoms, or the stated temperature for this exact row.
+- evidence_anchor must point to a row-specific mechanistic sentence, concept, or local structural clue instead of a generic paper-level summary.
+- If the reference text could support multiple rows, explain why this row uses its selected catalyst-reactant atom pair, local hotspot, or temperature rationale rather than copying the same sentence across samples.
+- For same-reference rows, make cat_r1_pair.selectivity_rationale, cat_r1_pair.dominant_interaction.summary, cat_r1_pair.temperature_modulation.rationale, and meta.evidence_anchor jointly identify at least one row-specific mechanistic difference versus another row from that reference.
+- A row-specific mechanistic difference must say what changes in the catalyst-reactant atom pair, local hotspot, steric wall, or temperature-sensitive step; different confidence values, softer wording, or synonyms do not count.
+- If pair evidence is limited, keep cat_r1_pair low-confidence but still fill the pair-specific fields conservatively instead of omitting native pair structure.
+- joint_interactions must only contain catalyst-reactant atom pairs; do not use same-component atom pairs there.
+- Use cat_r2_pair only when product-side pair evidence is unusually strong; otherwise leave its fields low-confidence and minimal.
+- Keep meta text fields concise, mechanistically specific, and outcome-agnostic.

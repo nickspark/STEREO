@@ -1,0 +1,33 @@
+{
+  "title": "Borylation reaction training and extrapolation datasets",
+  "training_dataset": "borylation_training_dataset.csv",
+  "extrapolation_dataset": "borylation_extrapolation_dataset.csv",
+  "training_row_count": 800,
+  "training_unique_reaction_count": 782,
+  "extrapolation_row_count": 108316,
+  "reaction_temperature_c": 60.0,
+  "training_columns": [
+    "btr_id",
+    "T/C",
+    "ee %",
+    "cat-smiles",
+    "cat-xyz",
+    "r1-smiles",
+    "r1-xyz",
+    "p1-smiles",
+    "p1-xyz"
+  ],
+  "extrapolation_columns": [
+    "bvs_id",
+    "bvs_catalog_index",
+    "bvs_cat_index",
+    "bvs_rc_index",
+    "T/C",
+    "cat-smiles",
+    "cat-xyz",
+    "r1-smiles",
+    "r1-xyz",
+    "p1-smiles",
+    "p1-xyz"
+  ]
+}

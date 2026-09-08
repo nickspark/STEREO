@@ -1,0 +1,42 @@
+# Python and notebook artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Local environments and editor state
+.venv/
+venv/
+env/
+.env
+.vscode/
+.idea/
+
+# Generated training, testing, and extrapolation artifacts
+outputs/
+progress/
+runs/
+logs/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.log
+*.out
+*.err
+
+# Derived feature caches are regenerated locally
+release_data/dataset_cache/
+**/dataset_cache/
+
+# Keep released data and reproducibility assets tracked.
+!release_data/*.csv
+!release_data/*.json
+!assets/literature/
+!assets/literature/*.json
+
+# The extrapolation table is distributed via Zenodo (GitHub blocks files >100 MB).
+release_data/borylation_extrapolation_dataset.csv

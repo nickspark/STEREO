@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "STEREO and STEREO-Lit"
+message: "If you use this software or the accompanying datasets, please cite the associated research article."
+type: software
+authors:
+  - family-names: "Authors"
+    given-names: "The STEREO authors"
+  - family-names: "Zhe"
+    given-names: "Nick"
+repository-code: "https://github.com/nickspark/STEREO"
+license: MIT
+keywords:
+  - chemistry
+  - machine learning
+  - enantioselectivity
+  - borylation
