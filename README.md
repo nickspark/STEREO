@@ -53,4 +53,4 @@ PYTHONPATH=src python src/predict_extrapolation.py \
 
 Code is released under the MIT License. The released tabular data are
 licensed under CC BY 4.0; the full extrapolation archive is distributed via
-Zenodo. See [CITATION.cff](CITATION.cff) for citation metadata.
+Zenodo. Please cite the associated research article when using this release.
