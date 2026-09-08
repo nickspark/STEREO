@@ -792,7 +792,7 @@ def _compute_borylation_3d_features(
         "coulomb_features": coulomb_features,
         "geom_features": geom_features,
     }
-    if write_cache:
+    if write_cache and max_atoms_override is None:
         _save_cached_borylation_3d_features(
             cache_key=cache_key,
             row_count=len(df),
