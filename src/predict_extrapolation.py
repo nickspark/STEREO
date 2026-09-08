@@ -87,7 +87,10 @@ def main():
     options=_dataset_kwargs(summary)
     train=MLBorylationDataset(str(a.training_data), split="test", include_literature=include_literature, literature_cache_path=cache_path, **options)
     stats={"feat_mean":train.feat_mean,"feat_std":train.feat_std,"y_mean":float(train.y_mean),"y_std":float(train.y_std)}
-    infer=MLBorylationDataset(str(a.input), split="inference", include_literature=include_literature, literature_cache_path=extrapolation_cache_path, allow_missing_target=True, normalization_stats=stats, **options)
+    # The checkpoint input width is set by the training table's largest structures.
+    # Reusing those widths pads smaller extrapolation molecules and truncates larger ones.
+    train_atom_widths=(train.max_cat_atoms, train.max_r1_atoms, train.max_r2_atoms)
+    infer=MLBorylationDataset(str(a.input), split="inference", include_literature=include_literature, literature_cache_path=extrapolation_cache_path, allow_missing_target=True, normalization_stats=stats, max_atoms_override=train_atom_widths, **options)
     loader=DataLoader(infer,batch_size=a.batch_size,shuffle=False,collate_fn=lambda b: collate_fn(b,include_literature=include_literature))
     model=_model(summary,infer)
     if hasattr(model, "ablation_disable_global_background"):

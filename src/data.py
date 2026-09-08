@@ -690,6 +690,7 @@ def _compute_borylation_3d_features(
     use_geometry: bool,
     use_cache: bool = True,
     write_cache: bool = True,
+    max_atoms_override: Optional[Tuple[int, int, int]] = None,
 ):
     cache_key = _borylation_3d_content_digest(
         df,
@@ -697,7 +698,7 @@ def _compute_borylation_3d_features(
         r1_xyz_col=r1_xyz_col,
         r2_xyz_col=r2_xyz_col,
     )
-    if use_cache:
+    if use_cache and max_atoms_override is None:
         cached = _load_cached_borylation_3d_features(
             cache_key=cache_key,
             row_count=len(df),
@@ -740,6 +741,8 @@ def _compute_borylation_3d_features(
         max_r1 = max(max_r1, len(r1_z))
         max_r2 = max(max_r2, len(r2_z))
 
+    if max_atoms_override is not None:
+        max_cat, max_r1, max_r2 = (int(v) for v in max_atoms_override)
     coulomb_features = None
     geom_features = None
     if use_coulomb:
@@ -3216,6 +3219,7 @@ class MLBorylationDataset(Dataset):
         signature_columns: Optional[Sequence[str]] = None,
         allow_missing_target: bool = False,
         normalization_stats: Optional[Mapping[str, object]] = None,
+        max_atoms_override: Optional[Tuple[int, int, int]] = None,
     ):
         df, target_col = _load_mlb_dataframe(excel_path, allow_missing_target=allow_missing_target)
         cat_xyz_col = _select_column(df, _BORYLATION_XYZ_COLUMN_CANDIDATES["cat"], "cat xyz")
@@ -3402,7 +3406,11 @@ class MLBorylationDataset(Dataset):
                 r2_xyz_col=r2_xyz_col,
                 use_coulomb=use_coulomb,
                 use_geometry=use_geometry,
+                max_atoms_override=max_atoms_override,
             )
+        self.max_cat_atoms = int(max_cat)
+        self.max_r1_atoms = int(max_r1)
+        self.max_r2_atoms = int(max_r2)
 
         feature_cols = list(numeric_cols)
         if qc_feature_cols:
