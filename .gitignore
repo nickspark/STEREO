@@ -28,6 +28,11 @@ checkpoints/
 *.out
 *.err
 
+# Released checkpoint; other generated checkpoints remain ignored.
+!ckpt/
+!ckpt/config.json
+!ckpt/model.pt
+
 # Derived feature caches are regenerated locally
 release_data/dataset_cache/
 **/dataset_cache/

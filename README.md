@@ -23,14 +23,7 @@ Zenodo record associated with the paper before running extrapolation.
 
 The training table uses `btr_id`; the extrapolation table uses `bvs_id`.
 
-## Train and test
-
-```bash
-python train.py --variant stereo --data /path/to/borylation_training_dataset.csv \
-  --epochs 20 --batch-size 16 --device cuda \
-  --summary-path outputs/training_summary.json \
-  --model-save-path outputs/training_model.pt --log-dir outputs/training_run
-```
+## Train
 
 ```bash
 python train.py --variant stereo-lit --data release_data/borylation_training_dataset.csv \
@@ -39,15 +32,29 @@ python train.py --variant stereo-lit --data release_data/borylation_training_dat
   --model-save-path outputs/stereo_lit_model.pt --log-dir outputs/stereo_lit_run
 ```
 
-## Extrapolate
+## Test from checkpoint
+
+```bash
+PYTHONPATH=src python src/evaluate_checkpoint.py \
+  --config ckpt/config.json --checkpoint ckpt/model.pt \
+  --data release_data/borylation_training_dataset.csv \
+  --literature-cache assets/literature/stereo_lit_cache.json \
+  --device cuda --batch-size 16
+```
+
+## Extrapolate from checkpoint
 
 ```bash
 PYTHONPATH=src python src/predict_extrapolation.py \
-  --summary outputs/training_summary.json --checkpoint outputs/training_model.pt \
+  --summary ckpt/config.json --checkpoint ckpt/model.pt \
   --training-data release_data/borylation_training_dataset.csv \
   --input release_data/borylation_extrapolation_dataset.csv \
+  --literature-cache assets/literature/stereo_lit_cache.json \
+  --extrapolation-cache assets/literature/empty_extrapolation_cache.json \
   --output outputs/extrapolation_predictions.csv --device cuda --batch-size 64
 ```
+
+Use `--device cpu` in any command when CUDA is unavailable.
 
 ## License
 
